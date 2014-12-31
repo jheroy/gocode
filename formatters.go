@@ -55,10 +55,22 @@ func (*vim_formatter) write_candidates(candidates []candidate, num int) {
 
 		word := c.Name
 		if c.Class == decl_func {
-			word += "("
-			if strings.HasPrefix(c.Type, "func()") {
-				word += ")"
+			// word += "("
+			// if strings.HasPrefix(c.Type, "func()") {
+			// 	word += ")"
+			// }
+			parameter_start := strings.Index(c.Type, "(")
+			parameter_end := strings.Index(c.Type, ")")
+			parameters := c.Type[parameter_start+1 : parameter_end]
+			parameter_list := strings.Split(parameters, ",")
+			for index, parameter := range parameter_list {
+				if strings.TrimSpace(parameter) == "" {
+					continue
+				}
+				parameter_list[index] = "⟪" + parameter + "⟫"
 			}
+			parameters_res := strings.Join(parameter_list, ",")
+			word = fmt.Sprintf("%s%s", c.Name, "("+parameters_res+")")
 		}
 
 		abbr := fmt.Sprintf("%s %s %s", c.Class, c.Name, c.Type)
